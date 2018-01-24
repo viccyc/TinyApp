@@ -33,8 +33,8 @@ function makeURLDB() {
     Object.assign(urlDatabase[shortURL], { longURL });
     return urlDatabase[shortURL];
   }
-  function deleteURL(id) {
-    delete urlDatabase[id];
+  function deleteURL(urlID) {
+    delete urlDatabase[urlID];
   }
   return {
     getURL,
