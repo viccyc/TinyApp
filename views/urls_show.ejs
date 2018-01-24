@@ -5,7 +5,7 @@
       <h1>URL Database</h1>
       <ul>
         <% if (longURL) {%>
-          <h3><%= shortURL %> - <%= longURL %></h3>
+          <h3><a href="/u/<%= shortURL %>"><%= shortURL %></a> - <%= longURL %></h3>
         <% } else { %>
           <h3> Invalid Short URL </h3>
         <% } %>

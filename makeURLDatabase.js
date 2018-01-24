@@ -23,13 +23,10 @@ function makeURLDB() {
   function getURL(urlId) {
     return urlDatabase[urlId];
   }
-  function createURL(shortURL, longURL) {
-    const urlId = generateRandomString();
-    urlDatabase[urlId] = {
-      shortURL,
-      longURL,
-    };
-    return urlId;
+  function createURL(longURL) {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = longURL;
+    return shortURL;
   }
   function updateURL(shortURL, longURL) {
     if (!urlDatabase[shortURL]) return 'You are dumb';

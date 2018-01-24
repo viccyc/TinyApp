@@ -19,7 +19,9 @@ app.post("/urls", (req, res) => {
   // var randomString = urlDB.generateRandomString();
   // urlDB[randomString] = req.body.longURL;
   // res.redirect("http://localhost:8080/urls/" + randomString);
-  const id = urlDB.createURL(req.body.shortURL, req.body.long);
+  console.log("req.body :", req.body);
+
+  const id = urlDB.createURL(req.body.longURL);
   res.redirect(`/urls/${id}`);
 
 
@@ -27,9 +29,9 @@ app.post("/urls", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   console.log("req.url: ", req.url);
-  let longURL = urlDB[req.params.id];
+  let longURL = urlDB.getURL(req.params.shortURL);
   console.log("longURL: ", longURL);
-  // res.redirect(longURL);
+  res.redirect(longURL);
 });
 
 app.get("/", (req, res) => {
@@ -48,7 +50,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const longURL = urlDB[req.params.id];
+  const longURL = urlDB.getURL(req.params.id);
+  console.log("!!!!!: ", longURL);
   let templateVars = {
     shortURL: req.params.id,
     longURL: longURL
