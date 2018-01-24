@@ -6,7 +6,10 @@
       <ul>
         <% for(var i in urls) { %>
           <li><%= i + " URL:  " + urls[i] %>  </li>
-          <form method="POST" action="/urls/<%= i %>/delete"><button type='submit'>Delete</button></form>
+          <a href="/urls/<%= i %>">Edit</a>
+          <form method="POST" action="/urls/<%= i %>/delete">
+            <button type='submit'>Delete</button>
+          </form>
           <link rel="stylesheet" type="text/css" href="">
         <% } %>
       </ul>
