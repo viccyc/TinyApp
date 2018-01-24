@@ -20,6 +20,13 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`);
 });
 
+// delete record in database
+app.post("/urls/:shortURL/delete", (req, res) => {
+  console.log("req.params: ", req.params);
+  urlDB.deleteURL(req.params.shortURL);
+  res.redirect(`/urls`);
+});
+
 // redirect to longURL page when the shortURL is input
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDB.getURL(req.params.shortURL);
@@ -37,7 +44,6 @@ app.get("/urls.json", (req, res) => {
 // returns urls from DB
 app.get("/urls", (req, res) => {
   let templateVars = urlDB.getURLs();
-  console.log("templateVars: ", templateVars);
   res.render("urls_index", { urls: templateVars });
 });
 

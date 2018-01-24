@@ -5,10 +5,11 @@
       <h1>URL Database</h1>
       <ul>
         <% for(var i in urls) { %>
-          <li><%= i + " URL:  " + urls[i] %>  <button type='delete'>Delete</button></li>
+          <li><%= i + " URL:  " + urls[i] %>  </li>
+          <form method="POST" action="/urls/<%= i %>/delete"><button type='submit'>Delete</button></form>
           <link rel="stylesheet" type="text/css" href="">
         <% } %>
       </ul>
-        <form method="POST" action="/urls/9sm5xK/delete">...</form>
+
   </body>
 </html>
