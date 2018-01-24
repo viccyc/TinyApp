@@ -29,8 +29,10 @@ function makeURLDB() {
     return shortURL;
   }
   function updateURL(shortURL, longURL) {
-    if (!urlDatabase[shortURL]) return 'You are dumb';
-    Object.assign(urlDatabase[shortURL], { longURL });
+    console.log("shortURL: ", shortURL);
+    console.log("longURL: ", longURL);
+
+    urlDatabase[shortURL] = longURL;
     return urlDatabase[shortURL];
   }
   function deleteURL(urlID) {

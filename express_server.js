@@ -22,8 +22,15 @@ app.post("/urls", (req, res) => {
 
 // delete record in database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log("req.params: ", req.params);
   urlDB.deleteURL(req.params.shortURL);
+  res.redirect(`/urls`);
+});
+
+// update record in database
+app.post("/urls/:shortURL/update", (req, res) => {
+  console.log("req.params: ", req.params);
+  console.log("req.body.longURL: ", req.body.longURL)
+  urlDB.updateURL(req.params.shortURL, req.body.longURL);
   res.redirect(`/urls`);
 });
 
