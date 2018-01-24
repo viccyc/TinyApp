@@ -1,8 +1,8 @@
 {
-  "name": "using-express",
+  "name": "TinyApp",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A web app using Node. The app will allow users to shorten long URLs much like TinyURL.com and bit.ly do.",
+  "main": "express_server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
