@@ -14,23 +14,15 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// create record in database
 app.post("/urls", (req, res) => {
-  // console.log("req.body :", req.body);
-  // var randomString = urlDB.generateRandomString();
-  // urlDB[randomString] = req.body.longURL;
-  // res.redirect("http://localhost:8080/urls/" + randomString);
-  console.log("req.body :", req.body);
-
   const id = urlDB.createURL(req.body.longURL);
   res.redirect(`/urls/${id}`);
-
-
 });
 
+// redirect to longURL page when the shortURL is input
 app.get("/u/:shortURL", (req, res) => {
-  console.log("req.url: ", req.url);
   let longURL = urlDB.getURL(req.params.shortURL);
-  console.log("longURL: ", longURL);
   res.redirect(longURL);
 });
 
@@ -49,9 +41,9 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", { urls: templateVars });
 });
 
+// show the short and long URL for that short URL
 app.get("/urls/:id", (req, res) => {
   const longURL = urlDB.getURL(req.params.id);
-  console.log("!!!!!: ", longURL);
   let templateVars = {
     shortURL: req.params.id,
     longURL: longURL
@@ -67,11 +59,3 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// function generateRandomString() {
-//   let chars = '1234567890abcdefghijklmnopqrstuvwxyz';
-//   var result = '';
-//   for (var i = 6; i > 0; --i) {
-//     result += chars[Math.floor(Math.random() * chars.length)];
-//   }
-//   return result;
-// }
