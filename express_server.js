@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
 };
 
 const bodyParser = require("body-parser");
@@ -18,8 +18,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  console.log("req.body :", req.body);
+  var randomString = generateRandomString();
+  urlDatabase[randomString] = req.body.longURL;
+  res.redirect("http://localhost:8080/urls/" + randomString);
 });
 
 app.get("/", (req, res) => {
@@ -60,5 +62,3 @@ function generateRandomString() {
   }
   return result;
 }
-
-console.log(generateRandomString());
