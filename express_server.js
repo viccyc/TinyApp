@@ -23,6 +23,15 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.get("/urls/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: longURL
+  };
+  res.render("urls_show", templateVars);
+});
+
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
