@@ -1,17 +1,26 @@
-var express = require("express");
-var app = express();
-// default port 8080
-var PORT = process.env.PORT || 8080;
+const express = require("express");
+const app = express();
+const cookieParser = require('cookie-parser');
+const bodyParser = require("body-parser");
+const PORT = process.env.PORT || 8080;
 const urlDB = require('./makeURLDatabase')();
 
 app.set("view engine", "ejs");
-
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
+
+// clears username cookie and logs out - goes to urls page
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+})
 
 // opens the new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+let templateVars = {
+  username: req.cookies["username"],
+};
+res.render("urls_new", templateVars);
 });
 
 // sets username cookie parameter
@@ -34,8 +43,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // update record in database
 app.post("/urls/:shortURL/update", (req, res) => {
-  console.log("req.params: ", req.params);
-  console.log("req.body.longURL: ", req.body.longURL)
   urlDB.updateURL(req.params.shortURL, req.body.longURL);
   res.redirect(`/urls`);
 });
@@ -56,8 +63,11 @@ app.get("/urls.json", (req, res) => {
 
 // returns urls from DB
 app.get("/urls", (req, res) => {
-  let templateVars = urlDB.getURLs();
-  res.render("urls_index", { urls: templateVars });
+  let templateVars = {
+      urls: urlDB.getURLs(),
+      username: req.cookies["username"]
+  };
+  res.render("urls_index", templateVars);
 });
 
 // show the short and long URL for that short URL
@@ -65,7 +75,8 @@ app.get("/urls/:id", (req, res) => {
   const longURL = urlDB.getURL(req.params.id);
   let templateVars = {
     shortURL: req.params.id,
-    longURL: longURL
+    longURL: longURL,
+    username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <body>
-      <% include('partials/_header') %>
-      <h1>URL Database</h1>
+      <% include partials/_header %>
       <ul>
         <% if (longURL) {%>
           <h3><a href="/u/<%= shortURL %>"><%= shortURL %></a> - <%= longURL %></h3>

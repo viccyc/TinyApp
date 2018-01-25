@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TinyApp Header</title>
+    <title>TinyApp</title>
+    <% if (username) { %>
+    <p><small> You're logged in as: <%= username %></small></p>
+    <form action="/logout" method="POST">
+      <input type="submit" value="Logout">
+    </form>
+    <% } else { %>
     <form action="/login" method="POST" style="margin:150px;">
       <label>Enter Your Name:</label>
       <input id="username" type="text" name="username" placeholder="http://" style="width: 300px">
       <input type="submit" value="Submit" name="username">
     </form>
-
+    <% } %>
   </head>
 </html>
