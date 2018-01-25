@@ -3,11 +3,13 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 8080;
-const urlDB = require('./makeURLDatabase')();
+const urlDB = require('./makeURLDatabase');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+
+console.log("users: ", urlDB.users);
 
 // clears username cookie and logs out - goes to urls page
 app.post("/logout", (req, res) => {
