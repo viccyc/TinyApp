@@ -15,11 +15,22 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 })
 
+// returns registration page
+app.get("/register", (req, res) => {
+  res.render("urls_register");
+});
+
+// posts registration page
+app.post("/register", (req, res) => {
+  console.log("req.body: ", req.body);
+  res.redirect(`/urls`);
+});
+
 // opens the new url page
 app.get("/urls/new", (req, res) => {
-let templateVars = {
-  username: req.cookies["username"],
-};
+  let templateVars = {
+    username: req.cookies["username"],
+  };
 res.render("urls_new", templateVars);
 });
 
