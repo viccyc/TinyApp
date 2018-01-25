@@ -14,6 +14,12 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// sets username cookie parameter
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username[0]);
+  res.redirect(`/urls`);
+});
+
 // create record in database
 app.post("/urls", (req, res) => {
   const id = urlDB.createURL(req.body.longURL);
