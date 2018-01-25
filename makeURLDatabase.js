@@ -47,23 +47,56 @@ function makeURLDB() {
   };
 }
 
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  },
- "user3RandomID": {
-    id: "user3RandomID",
-    email: "user3@example.com",
-    password: "revv52-madness"
+function makeUserDB() {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const alphabet = `${letters + letters.toUpperCase()}0123456789`;
+
+  function generateRandomString() {
+    let chars = '1234567890abcdefghijklmnopqrstuvwxyz';
+    var result = '';
+    for (var i = 8; i > 0; --i) {
+      result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return result;
   }
+
+  const users = {
+    "userRandomID": {
+      id: "userRandomID",
+      email: "user@example.com",
+      password: "purple-monkey-dinosaur"
+    },
+   "user2RandomID": {
+      id: "user2RandomID",
+      email: "user2@example.com",
+      password: "dishwasher-funk"
+    },
+   "user3RandomID": {
+      id: "user3RandomID",
+      email: "user3@example.com",
+      password: "revv52-madness"
+    }
+  };
+
+  function getUsers() {
+    return users;
+  }
+
+  function createUser(email, password) {
+    const userID = generateRandomString();
+    users[userID] = {
+      id: userID,
+      email: email,
+      password: password
+    }
+    return userID;
+  }
+
+  return {
+    getUsers,
+    createUser
+  };
 }
 
-module.exports = makeURLDB;
-module.exports = { users };
+module.exports.makeURLDB = makeURLDB;
+module.exports.makeUserDB = makeUserDB;

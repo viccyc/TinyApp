@@ -1,15 +1,19 @@
 const express = require("express");
-const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
+const myDatabases = require('./makeURLDatabase');
+const myURLDB = myDatabases.makeURLDB();
+const myUserDB = myDatabases.makeUserDB();
+
 const PORT = process.env.PORT || 8080;
-const urlDB = require('./makeURLDatabase');
+const app = express();
 
 app.set("view engine", "ejs");
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-console.log("users: ", urlDB.users);
+console.log("users: ", myUserDB.getUsers());
 
 // clears username cookie and logs out - goes to urls page
 app.post("/logout", (req, res) => {
@@ -22,9 +26,10 @@ app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
-// posts registration page
+// posts registration page and creates record in UserDB
 app.post("/register", (req, res) => {
-  console.log("req.body: ", req.body);
+  const id = myUserDB.createUser(req.body.email, req.body.pwd);
+  res.cookie('user_id', id);
   res.redirect(`/urls`);
 });
 
@@ -44,25 +49,26 @@ app.post("/login", (req, res) => {
 
 // create record in database
 app.post("/urls", (req, res) => {
-  const id = urlDB.createURL(req.body.longURL);
+  const id = myURLDB.createURL(req.body.longURL);
   res.redirect(`/urls/${id}`);
 });
 
 // delete record in database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  urlDB.deleteURL(req.params.shortURL);
+  console.log('hello');
+  myURLDB.deleteURL(req.params.shortURL);
   res.redirect(`/urls`);
 });
 
 // update record in database
 app.post("/urls/:shortURL/update", (req, res) => {
-  urlDB.updateURL(req.params.shortURL, req.body.longURL);
+  myURLDB.updateURL(req.params.shortURL, req.body.longURL);
   res.redirect(`/urls`);
 });
 
 // redirect to longURL page when the shortURL is input
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDB.getURL(req.params.shortURL);
+  let longURL = myURLDB.getURL(req.params.shortURL);
   res.redirect(longURL);
 });
 
@@ -71,13 +77,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDB);
+  res.json(myURLDB.makeURLDB());
 });
 
 // returns urls from DB
 app.get("/urls", (req, res) => {
   let templateVars = {
-      urls: urlDB.getURLs(),
+      urls: myURLDB.getURLs(),
       username: req.cookies["username"]
   };
   res.render("urls_index", templateVars);
@@ -85,7 +91,7 @@ app.get("/urls", (req, res) => {
 
 // show the short and long URL for that short URL
 app.get("/urls/:id", (req, res) => {
-  const longURL = urlDB.getURL(req.params.id);
+  const longURL = myURLDB.getURL(req.params.id);
   let templateVars = {
     shortURL: req.params.id,
     longURL: longURL,
