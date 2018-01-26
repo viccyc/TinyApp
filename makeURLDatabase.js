@@ -82,6 +82,10 @@ function makeUserDB() {
     return users;
   }
 
+  function getUser(userId) {
+    return users[userId];
+  }
+
   function createUser(email, password) {
     const userID = generateRandomString();
     users[userID] = {
@@ -94,6 +98,7 @@ function makeUserDB() {
 
   return {
     getUsers,
+    getUser,
     createUser
   };
 }

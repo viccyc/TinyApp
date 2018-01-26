@@ -15,7 +15,9 @@ app.use(cookieParser());
 
 // clears username cookie and logs out - goes to urls page
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
+  res.clearCookie("user");
+  res.clearCookie("username")
   res.redirect("/urls");
 })
 
@@ -25,18 +27,15 @@ app.get("/register", (req, res) => {
 });
 
 // posts registration page and creates record in UserDB. Stores cookie
+// error handling for registration page
 app.post("/register", (req, res, err) => {
   let userEmail = myUserDB.getUsers();
-  let success = 0;
+  let success = 1;
   if ((req.body.email) && (req.body.pwd)) {
     for (key in userEmail) {
       if (req.body.email === userEmail[key].email) {
         res.status(400).send('Email address already exists');
         success = 0;
-      } else {
-        const id = myUserDB.createUser(req.body.email, req.body.pwd);
-        res.cookie('user_id', id);
-        success = 1;
       }
     }
   } else {
@@ -45,6 +44,9 @@ app.post("/register", (req, res, err) => {
   }
 
   if (success === 1) {
+    const id = myUserDB.createUser(req.body.email, req.body.pwd);
+    const user = myUserDB.getUser(id);
+    res.cookie('user', user);
     res.redirect(`/urls`);
   }
 });
@@ -52,14 +54,15 @@ app.post("/register", (req, res, err) => {
 // opens the new url page
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: req.cookies["user"],
   };
+  console.log("templateVars: ", templateVars);
 res.render("urls_new", templateVars);
 });
 
-// sets username cookie parameter
+// sets user cookie parameter
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username[0]);
+  res.cookie('user', req.body.user);
   res.redirect(`/urls`);
 });
 
@@ -71,7 +74,6 @@ app.post("/urls", (req, res) => {
 
 // delete record in database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log('hello');
   myURLDB.deleteURL(req.params.shortURL);
   res.redirect(`/urls`);
 });
@@ -100,7 +102,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
       urls: myURLDB.getURLs(),
-      username: req.cookies["username"]
+      user: req.cookies["user"]
   };
   res.render("urls_index", templateVars);
 });
@@ -111,7 +113,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: longURL,
-    username: req.cookies["username"]
+    user: req.cookies["user"]
   };
   res.render("urls_show", templateVars);
 });
