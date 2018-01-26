@@ -64,17 +64,17 @@ function makeUserDB() {
     "userRandomID": {
       id: "userRandomID",
       email: "user@example.com",
-      password: "purple-monkey-dinosaur"
+      pwd: "purple-monkey-dinosaur"
     },
    "user2RandomID": {
       id: "user2RandomID",
       email: "user2@example.com",
-      password: "dishwasher-funk"
+      pwd: "dishwasher-funk"
     },
    "user3RandomID": {
       id: "user3RandomID",
       email: "user3@example.com",
-      password: "revv52-madness"
+      pwd: "revv52-madness"
     }
   };
 

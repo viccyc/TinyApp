@@ -60,10 +60,24 @@ app.get("/urls/new", (req, res) => {
 res.render("urls_new", templateVars);
 });
 
-// sets user cookie parameter
+// opens new login page
+app.get("/login", (req, res) => {
+    res.render("urls_login");
+});
+
+// checks if login info is correct
 app.post("/login", (req, res) => {
-  res.cookie('user', req.body.user);
-  res.redirect(`/urls`);
+  let userEmail = myUserDB.getUsers();
+  if ((req.body.email) && (req.body.pwd)) {
+    for (key in userEmail) {
+      if ((req.body.email === userEmail[key].email) && (req.body.pwd === userEmail[key].pwd)) {
+        res.cookie('user_id', req.body.id);
+        return res.redirect('/');
+      }
+    }
+  }
+  res.status(403).send('Email and password combination is not correct');
+
 });
 
 // create record in database
