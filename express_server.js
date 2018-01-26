@@ -13,11 +13,10 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-// clears username cookie and logs out - goes to urls page
+// clears cookie and logs out - goes to urls page
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.clearCookie("user");
-  res.clearCookie("username")
   res.redirect("/urls");
 })
 
@@ -46,6 +45,7 @@ app.post("/register", (req, res, err) => {
   if (success === 1) {
     const id = myUserDB.createUser(req.body.email, req.body.pwd);
     const user = myUserDB.getUser(id);
+  console.log("user: ", user);
     res.cookie('user', user);
     res.redirect(`/urls`);
   }
@@ -70,6 +70,7 @@ app.post("/login", (req, res) => {
   let userEmail = myUserDB.getUsers();
   if ((req.body.email) && (req.body.pwd)) {
     for (key in userEmail) {
+console.log(req.body.email, userEmail[key].email, req.body.pwd, userEmail[key].pwd);
       if ((req.body.email === userEmail[key].email) && (req.body.pwd === userEmail[key].pwd)) {
         res.cookie('user_id', req.body.id);
         return res.redirect('/');

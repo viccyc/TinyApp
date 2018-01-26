@@ -91,7 +91,7 @@ function makeUserDB() {
     users[userID] = {
       id: userID,
       email: email,
-      password: password
+      pwd: password
     }
     return userID;
   }
