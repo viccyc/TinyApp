@@ -26,11 +26,15 @@ app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
-// posts registration page and creates record in UserDB
-app.post("/register", (req, res) => {
-  const id = myUserDB.createUser(req.body.email, req.body.pwd);
-  res.cookie('user_id', id);
-  res.redirect(`/urls`);
+// posts registration page and creates record in UserDB. Stores cookie
+app.post("/register", (req, res, err) => {
+  if (!(req.body.email) || !(eq.body.pwd)) {
+    res.status(500).send('Email or password field cannot be blank!')
+  } else {
+    const id = myUserDB.createUser(req.body.email, req.body.pwd);
+    res.cookie('user_id', id);
+    res.redirect(`/urls`);
+  }
 });
 
 // opens the new url page
