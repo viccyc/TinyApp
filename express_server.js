@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const myDatabases = require('./makeURLDatabase');
+const cookieSession = require('cookie-session');
 const myURLDB = myDatabases.makeURLDB();
 const myUserDB = myDatabases.makeUserDB();
 
@@ -12,6 +13,11 @@ app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 // clears cookie and logs out - goes to urls page
 app.post("/logout", (req, res) => {
@@ -47,18 +53,26 @@ app.post("/register", (req, res, err) => {
     const user = myUserDB.getUser(id);
   console.log("user: ", user);
     res.cookie('user', user);
+    req.session.user_id = id;
+  console.log("req.session.user_id: ", req.session.user_id)
     res.redirect(`/urls`);
   }
 });
 
 // opens the new url page
 app.get("/urls/new", (req, res) => {
+  console.log("req.body.user_id: ", req.body.user_id);
   let templateVars = {
-    user: req.cookies["user"],
+    user: req.cookies["user"]
   };
-  console.log("templateVars: ", templateVars);
-res.render("urls_new", templateVars);
+  console.log("req.session.user_id: ", req.session.user_id);
+  if (req.session.user_id) {
+    res.render("urls_new", templateVars);
+  } else { res.redirect("/login")}
 });
+
+// xxxxxxx
+// NEED TO PUT THIS SESSION STUFF AFTER THE LOGIN POST TOO!
 
 // opens new login page
 app.get("/login", (req, res) => {
