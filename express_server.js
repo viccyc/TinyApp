@@ -51,28 +51,21 @@ app.post("/register", (req, res, err) => {
   if (success === 1) {
     const id = myUserDB.createUser(req.body.email, req.body.pwd);
     const user = myUserDB.getUser(id);
-  console.log("user: ", user);
     res.cookie('user', user);
     req.session.user_id = id;
-  console.log("req.session.user_id: ", req.session.user_id)
     res.redirect(`/urls`);
   }
 });
 
 // opens the new url page
 app.get("/urls/new", (req, res) => {
-  console.log("req.body.user_id: ", req.body.user_id);
   let templateVars = {
     user: req.cookies["user"]
   };
-  console.log("req.session.user_id: ", req.session.user_id);
   if (req.session.user_id) {
     res.render("urls_new", templateVars);
   } else { res.redirect("/login")}
 });
-
-// xxxxxxx
-// NEED TO PUT THIS SESSION STUFF AFTER THE LOGIN POST TOO!
 
 // opens new login page
 app.get("/login", (req, res) => {
@@ -84,10 +77,14 @@ app.post("/login", (req, res) => {
   let userEmail = myUserDB.getUsers();
   if ((req.body.email) && (req.body.pwd)) {
     for (key in userEmail) {
-console.log(req.body.email, userEmail[key].email, req.body.pwd, userEmail[key].pwd);
       if ((req.body.email === userEmail[key].email) && (req.body.pwd === userEmail[key].pwd)) {
         res.cookie('user_id', req.body.id);
-        return res.redirect('/');
+        const id = myUserDB.createUser(req.body.email, req.body.pwd);
+        req.session.user_id = id;
+        console.log("req.session.user_id: ", req.session.user_id);
+        if (req.session.user_id) {
+          return res.redirect('/urls');
+        } else { res.redirect("/login")}
       }
     }
   }
@@ -97,7 +94,9 @@ console.log(req.body.email, userEmail[key].email, req.body.pwd, userEmail[key].p
 
 // create record in database
 app.post("/urls", (req, res) => {
-  const id = myURLDB.createURL(req.body.longURL);
+  console.log("req.session: ",req.session);
+  const id = myURLDB.createURL(req.session.user_id, req.body.longURL);
+  console.log(myURLDB.getURLs());
   res.redirect(`/urls/${id}`);
 });
 

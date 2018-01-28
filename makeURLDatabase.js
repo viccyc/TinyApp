@@ -13,8 +13,16 @@ function makeURLDB() {
 
   const urlId = generateRandomString();
   const urlDatabase = {
-      "b2xVn2": "http://www.lighthouselabs.ca",
-      "9sm5xK": "http://www.google.com",
+      "b2xVn2": {
+        userId: "userRandomID",
+        shortURL: "b2xVn2",
+        longURL: "http://www.lighthouselabs.ca"
+      },
+      "9sm5xK": {
+        userId: "user2RandomID",
+        shortURL: "9sm5xK",
+        longURL: "http://www.google.com"
+      }
   };
 
   function getURLs() {
@@ -23,11 +31,16 @@ function makeURLDB() {
   function getURL(urlId) {
     return urlDatabase[urlId];
   }
-  function createURL(longURL) {
+  function createURL(userId, longURL) {
     const shortURL = generateRandomString();
-    urlDatabase[shortURL] = longURL;
+    urlDatabase[shortURL] = {
+      userID: userId,
+      shortURL: shortURL,
+      longURL: longURL,
+    };
     return shortURL;
   }
+
   function updateURL(shortURL, longURL) {
     console.log("shortURL: ", shortURL);
     console.log("longURL: ", longURL);
