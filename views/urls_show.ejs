@@ -4,13 +4,13 @@
       <% include partials/_header %>
       <ul>
         <% if (longURL) {%>
-          <h3><a href="/u/<%= shortURL %>"><%= shortURL %></a> - <%= longURL %></h3>
+          <h3><%= shortURL %></a> - <%= longURL %></h3>
         <% } else { %>
           <h3> Invalid Short URL </h3>
         <% } %>
       </ul>
           <form method="POST" action="/urls/<%= shortURL %>/update">
-            <input type="text" name="longURL">
+            <input type="text" name="longURL" value="<%=longURL%>"style="width: 30em; font-size: medium">
             <button type='submit'>Update</button>
           </form>
 

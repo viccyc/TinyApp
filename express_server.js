@@ -19,10 +19,9 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
-// clears cookie and logs out - goes to urls page
+// clears session and logs out - goes to urls page
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.clearCookie("user");
+  req.session = null;
   res.redirect("/urls");
 })
 
@@ -30,8 +29,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   res.render("urls_register");
 });
-
-// posts registration page and creates record in UserDB. Stores cookie
+// posts registration page and creates record in UserDB. Stores session
 // error handling for registration page
 app.post("/register", (req, res, err) => {
   let userEmail = myUserDB.getUsers();
@@ -50,8 +48,9 @@ app.post("/register", (req, res, err) => {
 
   if (success === 1) {
     const id = myUserDB.createUser(req.body.email, req.body.pwd);
+    // console.log('id:', id);
     const user = myUserDB.getUser(id);
-    res.cookie('user', user);
+    // console.log('user:', user);
     req.session.user_id = id;
     res.redirect(`/urls`);
   }
@@ -60,8 +59,11 @@ app.post("/register", (req, res, err) => {
 // opens the new url page
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    user: req.cookies["user"]
+    // user: req.session.user_id,
+    // email: req.body.email
+    user: myUserDB.getUser(req.session.user_id)
   };
+  // console.log("templateVars in /urls/new: ", templateVars);
   if (req.session.user_id) {
     res.render("urls_new", templateVars);
   } else { res.redirect("/login")}
@@ -74,14 +76,13 @@ app.get("/login", (req, res) => {
 
 // checks if login info is correct
 app.post("/login", (req, res) => {
-  let userEmail = myUserDB.getUsers();
+  let users = myUserDB.getUsers();
+  // console.log("users: ", users);
   if ((req.body.email) && (req.body.pwd)) {
-    for (key in userEmail) {
-      if ((req.body.email === userEmail[key].email) && (req.body.pwd === userEmail[key].pwd)) {
-        res.cookie('user_id', req.body.id);
-        const id = myUserDB.createUser(req.body.email, req.body.pwd);
-        req.session.user_id = id;
-        console.log("req.session.user_id: ", req.session.user_id);
+    for (key in users) {
+      if ((req.body.email === users[key].email) && (req.body.pwd === users[key].pwd)) {
+        let user_id = myUserDB.getUserbyEmail(req.body.email, req.body.pwd);
+        req.session.user_id = user_id;
         if (req.session.user_id) {
           return res.redirect('/urls');
         } else { res.redirect("/login")}
@@ -94,10 +95,11 @@ app.post("/login", (req, res) => {
 
 // create record in database
 app.post("/urls", (req, res) => {
-  console.log("req.session: ",req.session);
+  // console.log("req.session: ",req.session);
   const id = myURLDB.createURL(req.session.user_id, req.body.longURL);
-  console.log(myURLDB.getURLs());
-  res.redirect(`/urls/${id}`);
+  // console.log(myURLDB.getURLs());
+  // res.redirect(`/urls/${id}`);
+  res.redirect(`/urls`);
 });
 
 // delete record in database
@@ -106,10 +108,28 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect(`/urls`);
 });
 
+// NEED TO FIGURE OUT THE HASOWNPROPERTY THING - MAYBE JUST SEE IF IT'S IN DB??
 // update record in database
 app.post("/urls/:shortURL/update", (req, res) => {
-  myURLDB.updateURL(req.params.shortURL, req.body.longURL);
-  res.redirect(`/urls`);
+  // console.log("req.session.user_id: ", req.session.user_id);
+  // console.log("req.params.shortURL: ", req.params.shortURL);
+  // console.log("myURLDB: ", myURLDB.getURL(req.params.shortURL).shortURL);
+
+  let dbShortURL = myURLDB.getURL(req.params.shortURL);
+  let sessionUser = req.session.user_id;
+
+  // console.log('dbShortURL:', dbShortURL);
+  // console.log('myURLDB.getURLs(): ', myURLDB.getURLs());
+
+  if (sessionUser) {
+  //  if (myURLDB.getURL(req.params.shortURL).hasOwnProperty(myURLDB.getURL(req.params.shortURL).shortURL)) {
+    if (dbShortURL) {
+      if (sessionUser === dbShortURL.userId) {
+        myURLDB.updateURL(req.params.shortURL, req.body.longURL);
+        res.redirect(`/urls`);
+      } else { res.send("You don't own this short URL."); }
+    } else { res.send("This short URL doesn't exist."); }
+  } else { res.send("Log in first to view your short URLs."); }
 });
 
 // redirect to longURL page when the shortURL is input
@@ -119,7 +139,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -128,10 +148,12 @@ app.get("/urls.json", (req, res) => {
 
 // returns urls from DB
 app.get("/urls", (req, res) => {
+  console.log("req.session. in get urls:", req.session);
   let templateVars = {
-      urls: myURLDB.getURLs(),
-      user: req.cookies["user"]
+      urls: myURLDB.getURLsbyUserId(req.session.user_id),
+      user: myUserDB.getUser(req.session.user_id)
   };
+  console.log('templateVars in app.get /urls: ', templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -140,9 +162,10 @@ app.get("/urls/:id", (req, res) => {
   const longURL = myURLDB.getURL(req.params.id);
   let templateVars = {
     shortURL: req.params.id,
-    longURL: longURL,
-    user: req.cookies["user"]
+    longURL: longURL.longURL,
+    user: myUserDB.getUser(req.session.user_id)
   };
+  // console.log('templateVars:', templateVars);
   res.render("urls_show", templateVars);
 });
 

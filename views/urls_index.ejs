@@ -2,16 +2,22 @@
 <html lang="en">
   <body>
       <% include partials/_header %>
-      <ul>
-        <% for(var i in urls) { %>
-          <li><%= i + " URL:  " + urls[i] %>  </li>
-          <a href="/urls/<%= i %>">Edit</a>
-          <form method="POST" action="/urls/<%= i %>/delete">
-            <button type='submit'>Delete</button>
+      <% if (user) { %>
+            <% for(var url in urls) { %>
+              <form method="POST" action="/urls/<%= url %>/delete">
+                <ul>
+                  <li>
+                <%= url + " URL:  " + urls[url].longURL %>  
+              <a href="/urls/<%= url %>" style="padding: 1em">Edit</a>
+                <button type='submit'>Delete</button>
+              </li>
+            </ul>
+            <link rel="stylesheet" type="text/css" href="">
+            <% } %>
+          <p><a href='/urls/new'>Create a New Short Link</a></p>
+            <% } else { %>
+              <p>Please login or register to see URLs</p>
+            <% } %>
           </form>
-          <link rel="stylesheet" type="text/css" href="">
-        <% } %>
-      </ul>
-
   </body>
 </html>
