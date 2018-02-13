@@ -148,12 +148,12 @@ app.get("/urls.json", (req, res) => {
 
 // returns urls from DB
 app.get("/urls", (req, res) => {
-  console.log("req.session. in get urls:", req.session);
+  // console.log("req.session. in get urls:", req.session);
   let templateVars = {
       urls: myURLDB.getURLsbyUserId(req.session.user_id),
       user: myUserDB.getUser(req.session.user_id)
   };
-  console.log('templateVars in app.get /urls: ', templateVars);
+  // console.log('templateVars in app.get /urls: ', templateVars);
   res.render("urls_index", templateVars);
 });
 
