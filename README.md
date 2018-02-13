@@ -20,8 +20,8 @@
   Run the development web server by using 'nodemon express_server.js'
 
 ## Final Product
-!["Screenshot of Home page"]("https://github.com/viccyc/TinyApp/blob/master/docs/Home%20page.png")
-!["Screenshot of registration page"]("https://github.com/viccyc/TinyApp/blob/master/docs/Registration%20page.png")
-!["Screenshot of shortening URL page"]("https://github.com/viccyc/TinyApp/blob/master/docs/URL%20to%20shorten.png")
-!["Screenshot of User specific URL page"]("https://github.com/viccyc/TinyApp/blob/master/docs/URL%20belonging%20to%20user.png")
+["Screenshot of Home page"]("https://github.com/viccyc/TinyApp/blob/master/docs/Home%20page.png")
+["Screenshot of registration page"]("https://github.com/viccyc/TinyApp/blob/master/docs/Registration%20page.png")
+["Screenshot of shortening URL page"]("https://github.com/viccyc/TinyApp/blob/master/docs/URL%20to%20shorten.png")
+["Screenshot of User specific URL page"]("https://github.com/viccyc/TinyApp/blob/master/docs/URL%20belonging%20to%20user.png")
 
