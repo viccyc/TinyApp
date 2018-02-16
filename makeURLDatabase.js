@@ -30,6 +30,7 @@ function makeURLDB() {
   function getURLs() {
     return urlDatabase;
   }
+
   function getURL(urlId) {
     return urlDatabase[urlId];
   }
@@ -42,6 +43,17 @@ function makeURLDB() {
       }
     }
     return userURLs;
+  }
+
+  function getURLbyUserId(userId, urlId) {
+    let userURL = {};
+    for (const key in urlDatabase) {
+      if (urlDatabase[key].userId === userId ) {
+        if (urlDatabase[key].shortURL === urlId)
+          userURL[key] = urlDatabase[key];
+      }
+    }  
+    return userURL;
   }
 
   function createURL(userId, longURL) {
@@ -68,7 +80,8 @@ function makeURLDB() {
     deleteURL,
     updateURL,
     createURL,
-    getURLsbyUserId
+    getURLsbyUserId,
+    getURLbyUserId
   };
 }
 

@@ -34,31 +34,25 @@ app.get("/register", (req, res) => {
 // posts registration page and creates record in UserDB. Stores session
 // error handling for registration page
 app.post("/register", (req, res, err) => {
-  let userEmail = myUserDB.getUsers();
-  let success = 1;
-  let hashedPassword = bcrypt.hashSync(req.body.pwd, 10);
-  if ((req.body.email) && (hashedPassword)) {
+  const userEmail = myUserDB.getUsers();
+  if ((req.body.email) && (req.body.pwd)) {
     for (key in userEmail) {
       if (req.body.email === userEmail[key].email) {
         res.status(400).send('Email address already exists');
-        success = 0;
       }
     }
+    const hashedPassword = bcrypt.hashSync(req.body.pwd, 10);
+    const user_id = myUserDB.createUser(req.body.email, hashedPassword);
+    req.session.user_id = user_id;
+    return res.redirect('/urls');
   } else {
     res.status(400).send('Email or password field cannot be blank');
-    success = 0;
-  }
-
-  if (success === 1) {
-    const id = myUserDB.createUser(req.body.email, hashedPassword);
-    const user = myUserDB.getUser(id);
-    res.redirect(`/urls`);
   }
 });
 
 // opens the new url page
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
+  const templateVars = {
     user: myUserDB.getUser(req.session.user_id)
   };
   if (req.session.user_id) {
@@ -73,11 +67,11 @@ app.get("/login", (req, res) => {
 
 // checks if login info is correct
 app.post("/login", (req, res) => {
-  let users = myUserDB.getUsers();
+  const users = myUserDB.getUsers();
   if ((req.body.email) && (req.body.pwd)) {
     for (key in users) {
       if ((req.body.email === users[key].email) && bcrypt.compareSync(req.body.pwd, users[key].pwd)) {
-        let user_id = myUserDB.getUserbyEmail(req.body.email, users[key].pwd);
+        const user_id = myUserDB.getUserbyEmail(req.body.email, users[key].pwd);
         req.session.user_id = user_id;
         if (req.session.user_id) {
           return res.redirect('/urls');
@@ -103,9 +97,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // update record in database
 app.post("/urls/:shortURL/update", (req, res) => {
-
-  let dbShortURL = myURLDB.getURL(req.params.shortURL);
-  let sessionUser = req.session.user_id;
+  const dbShortURL = myURLDB.getURL(req.params.shortURL);
+  const sessionUser = req.session.user_id;
   if (sessionUser) {
     if (dbShortURL) {
       if (sessionUser === dbShortURL.userId) {
@@ -118,8 +111,9 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // redirect to longURL page when the shortURL is input
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = myURLDB.getURL(req.params.shortURL);
-  res.redirect(longURL);
+  shortURL = req.params.shortURL;
+  const longURL = myURLDB.getURL(shortURL).longURL;
+  res.redirect((longURL.startsWith('http') ? '' : '//') + longURL);
 });
 
 app.get("/", (req, res) => {
@@ -132,7 +126,7 @@ app.get("/urls.json", (req, res) => {
 
 // returns urls from DB
 app.get("/urls", (req, res) => {
-  let templateVars = {
+  const templateVars = {
     urls: myURLDB.getURLsbyUserId(req.session.user_id),
     user: myUserDB.getUser(req.session.user_id)
   };
@@ -141,13 +135,26 @@ app.get("/urls", (req, res) => {
 
 // show the short and long URL for that short URL
 app.get("/urls/:id", (req, res) => {
-  const longURL = myURLDB.getURL(req.params.id);
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: longURL.longURL,
-    user: myUserDB.getUser(req.session.user_id)
-  };
-  res.render("urls_show", templateVars);
+  const sessionId = req.session.user_id;
+  const shortURL = req.params.id;
+  const urlRecord = myURLDB.getURL(shortURL);
+
+  if (!sessionId) {
+    res.send("Log in first to view your short URLs.");
+  } else if (!urlRecord) {
+    res.status(404).send("This short URL doesn't exist.");
+  } else if (urlRecord.userId !== sessionId) {
+    res.status(403).send("You don't own this short URL.");
+  } else {
+    const templateVars = {
+      shortURL: shortURL,
+      longURL: urlRecord.longURL,
+      user: sessionId
+    };
+    if (templateVars) {
+      res.render("urls_show", templateVars);
+    }
+  }
 });
 
 app.get("/hello", (req, res) => {
